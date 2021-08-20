@@ -47,7 +47,7 @@
 #include <system/audio.h>
 
 #include "PalDefs.h"
-#include <audio_extn/AudioExtn.h>
+#include <AudioExtn.h>
 #include <mutex>
 #include <map>
 

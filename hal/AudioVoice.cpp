@@ -41,7 +41,7 @@
 #include "AudioVoice.h"
 #include "PalApi.h"
 #include "AudioCommon.h"
-#include <audio_extn/AudioExtn.h>
+#include <AudioExtn.h>
 
 #ifdef SEC_AUDIO_COMMON
 #include "AudioDevice.h"

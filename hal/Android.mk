@@ -5,6 +5,16 @@ LOCAL_AUDIO_SERVICE_64 := taro parrot bengal holi blair
 endif #TARGET_BOARD_SUFFIX
 
 include $(CLEAR_VARS)
+
+LOCAL_MODULE := libaudio_hal_headers
+LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/inc
+
+LOCAL_VENDOR_MODULE := true
+
+include $(BUILD_HEADER_LIBRARY)
+
+include $(CLEAR_VARS)
+
 ifeq ($(call is-board-platform-in-list,$(LOCAL_AUDIO_SERVICE_64)), true)
 LOCAL_MODULE       := android.hardware.audio.service_64.rc
 else
@@ -27,9 +37,9 @@ LOCAL_ARM_MODE := arm
 
 LOCAL_VINTF_FRAGMENTS := ../configs/common/manifest_non_qmaa.xml
 
-#ifeq ($(strip $(AUDIO_FEATURE_ENABLED_LSM_HIDL)),true)
-#LOCAL_VINTF_FRAGMENTS += ../configs/common/manifest_non_qmaa_extn.xml
-#endif
+ifeq ($(strip $(AUDIO_FEATURE_ENABLED_LSM_HIDL)),true)
+LOCAL_VINTF_FRAGMENTS += ../configs/common/manifest_non_qmaa_extn.xml
+endif
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_EC_REF_CAPTURE)),true)
 LOCAL_CFLAGS += -DEC_REF_CAPTURE_ENABLED
@@ -60,6 +70,7 @@ LOCAL_CFLAGS += -Wno-unused-local-typedef
 LOCAL_CPPFLAGS += -fexceptions
 
 LOCAL_C_INCLUDES += \
+    $(LOCAL_PATH)/inc \
     system/media/audio_utils/include \
     external/expat/lib \
     vendor/qcom/opensource/core-utils/fwk-detect \
@@ -85,7 +96,12 @@ LOCAL_SRC_FILES := \
     audio_extn/Gain.cpp \
     audio_extn/AudioExtn.cpp
 
-LOCAL_HEADER_LIBRARIES := libhardware_headers qti_audio_kernel_uapi libacdb_headers
+LOCAL_HEADER_LIBRARIES := \
+    libhardware_headers \
+    qti_audio_kernel_uapi \
+    libagm_headers \
+    libaudio_extn_headers \
+    libagmclient_headers
 
 LOCAL_SHARED_LIBRARIES := \
     libbase \
