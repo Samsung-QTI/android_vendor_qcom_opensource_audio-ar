@@ -108,7 +108,7 @@ AUDIO_PAL += lib_bt_aptx
 
 BOARD_SUPPORTS_OPENSOURCE_STHAL := true
 
-AUDIO_HARDWARE := audio.a2dp.default
+#AUDIO_HARDWARE := audio.a2dp.default
 AUDIO_HARDWARE += audio.usb.default
 AUDIO_HARDWARE += audio.r_submix.default
 AUDIO_HARDWARE += audio.primary.kona
