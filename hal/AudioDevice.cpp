@@ -69,7 +69,10 @@ static pal_device_id_t in_snd_device = PAL_DEVICE_NONE;
 microphone_characteristics_t AudioDevice::microphones;
 snd_device_to_mic_map_t AudioDevice::microphone_maps[PAL_MAX_INPUT_DEVICES];
 bool AudioDevice::mic_characteristics_available = false;
-
+//+P86801AA1, zhouweijie.lux, 20250909, add channel reversal function
+static int screen_rotation = 0;
+static int pre_screen_rotation = -1 ;
+//-P86801AA1, zhouweijie.lux, 20250909, add channel reversal function
 card_status_t AudioDevice::sndCardState = CARD_STATUS_ONLINE;
 
 struct audio_string_to_enum {
@@ -1624,6 +1627,24 @@ int AudioDevice::SetParameters(const char *kvpairs) {
             }
         }
     }
+
+    //+P86801AA1, zhouweijie.lux, 20250909, add channel reversal function
+    if (strstr(kvpairs, "g_hw_display_rotation=")) {
+        ret = str_parms_get_int(parms, "g_hw_display_rotation", &val);
+        if (ret >= 0) {
+            AHAL_DBG("get display g_hw_display_rotation.%d", val);
+            screen_rotation = val;
+            str_parms_del(parms, "g_hw_display_rotation");
+            if (pre_screen_rotation != screen_rotation) {
+                AHAL_DBG(" pre %d, g_hw_display_rotation %d", pre_screen_rotation, screen_rotation);
+                pre_screen_rotation = screen_rotation;
+                pal_set_param(PAL_PARAM_ID_LUX_DEVICE_ROTATION,
+                    (void*)&screen_rotation,
+                    sizeof(screen_rotation));
+            }
+        }
+    }
+   //-P86801AA1, zhouweijie.lux, 20250909, add channel reversal function
 
     /* Checking for Device rotation */
     ret = str_parms_get_int(parms, "rotation", &val);
