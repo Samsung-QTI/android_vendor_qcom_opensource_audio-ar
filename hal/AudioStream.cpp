@@ -5018,7 +5018,8 @@ exit:
     }
     stream_mutex_.unlock();
     clock_gettime(CLOCK_MONOTONIC, &readAt);
-    AHAL_DBG("Exit: returning size: %zu size ", size);
+    /* P86801AA1-1797, zhouweijie.lux, 2025.10.15, change log level */
+    AHAL_VERBOSE("Exit: returning size: %zu size ", size);
     return (ret < 0 ? onReadError(bytes, ret) : (size > 0 ? size : bytes));
 }
 
