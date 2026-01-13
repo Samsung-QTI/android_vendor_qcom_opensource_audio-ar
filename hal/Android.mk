@@ -67,10 +67,20 @@ LOCAL_C_INCLUDES += \
     $(call include-path-for, audio-effects) \
     $(LOCAL_PATH)/audio_extn
 
+LOCAL_C_INCLUDES += external/tinyalsa/include \
+    $(LOCAL_PATH)/fsm_cali_ar \
+    vendor/qcom/opensource/agm/plugins/tinyalsa/test
+
+LOCAL_CFLAGS += -DBACKEND_CONF_FILE=\"/vendor/etc/backend_conf.xml\"
+
 LOCAL_SRC_FILES := \
     AudioStream.cpp \
     AudioDevice.cpp \
     AudioVoice.cpp \
+    fsm_cali_ar/fsalgo_calib.c \
+    fsm_cali_ar/fsalgo_dsp_intf.c \
+    fsm_cali_ar/fsalgo_mixer.c \
+    fsm_cali_ar/fsalgo_reg.c \
     audio_extn/soundtrigger.cpp \
     audio_extn/Gain.cpp \
     audio_extn/AudioExtn.cpp
@@ -88,6 +98,8 @@ LOCAL_SHARED_LIBRARIES := \
     libprocessgroup \
     libutils \
     libar-pal \
+    libtinyalsa \
+    libagmmixer \
     android.hidl.allocator@1.0 \
     android.hidl.memory@1.0 \
     libhidlmemory

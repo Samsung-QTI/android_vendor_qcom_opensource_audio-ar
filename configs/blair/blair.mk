@@ -214,6 +214,15 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.audio.pro.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.pro.xml \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml
 
+PRODUCT_COPY_FILES += \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/fs19xx-spk1.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/fs19xx-spk1.bin \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/fs19xx-spk2.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/fs19xx-spk2.bin \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/fs19xx-spk3.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/fs19xx-spk3.bin \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/fs19xx-spk4.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/fs19xx-spk4.bin \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/spk_cal_silence.wav:$(TARGET_COPY_OUT_VENDOR)/etc/spk_cal_silence.wav \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/spk_cal_pink_noise.wav:$(TARGET_COPY_OUT_VENDOR)/etc/spk_cal_pink_noise.wav \
+    $(CONFIG_HAL_SRC_DIR)/foursemi/backend_conf.xml:$(TARGET_COPY_OUT_VENDOR)/etc/backend_conf.xml
+
 #XML Audio configuration files
 ifneq ($(TARGET_USES_AOSP_FOR_AUDIO), true)
 PRODUCT_COPY_FILES += \
