@@ -1396,6 +1396,9 @@ int AudioDevice::SetMode(const audio_mode_t mode) {
 
     AHAL_DBG("enter: mode: %d", mode);
     ret = voice_->SetMode(mode);
+    // FourSemi SPK MODE Start
+    pal_set_audio_mode(mode);
+    // FourSemi SPK MODE End
     AHAL_DBG("Exit ret: %d", ret);
     return ret;
 }

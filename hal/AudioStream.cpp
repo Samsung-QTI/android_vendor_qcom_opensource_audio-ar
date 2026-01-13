@@ -65,7 +65,9 @@
 static bool karaoke = false;
 std::mutex StreamOutPrimary::sourceMetadata_mutex_;
 std::mutex StreamInPrimary::sinkMetadata_mutex_;
-
+/* +P86801AA1-1797, zhouweijie.lux, 2025.08.26, add for smartpa cail */
+extern "C" void is_playing_status(int play_status);
+/* -P86801AA1-1797, zhouweijie.lux, 2025.08.26, add for smartpa cail */
 static bool is_pcm_format(audio_format_t format)
 {
     if (format == AUDIO_FORMAT_PCM_16_BIT ||
@@ -2237,7 +2239,9 @@ int StreamOutPrimary::Standby() {
             }
         }
     }
-
+/* +P86801AA1-1797, zhouweijie.lux, 2025.08.26, add for smartpa cail */
+    is_playing_status(0);
+/* -P86801AA1-1797, zhouweijie.lux, 2025.08.26, add for smartpa cail */
     if (mmap_shared_memory_fd >= 0) {
         close(mmap_shared_memory_fd);
         mmap_shared_memory_fd = -1;
@@ -3360,7 +3364,9 @@ ssize_t StreamOutPrimary::configurePalOutputStream() {
             }
         }
         stream_started_ = true;
-
+/* +P86801AA1-1797, zhouweijie.lux, 2025.08.26, add for smartpa cail */
+        is_playing_status(1);
+/* -P86801AA1-1797, zhouweijie.lux, 2025.08.26, add for smartpa cail */
         if (CheckOffloadEffectsType(streamAttributes_.type)) {
             ret = StartOffloadEffects(handle_, pal_stream_handle_);
             ret = StartOffloadVisualizer(handle_, pal_stream_handle_);
@@ -3581,13 +3587,10 @@ int StreamOutPrimary::SetAggregateSourceMetadata(bool voice_active) {
             track_count_total += astream_out_list[i]->btSourceMetadata.track_count;
         }
 
-        if (track_count_total == 0) {
-            AHAL_ERR("total track count is 0, return without settng SourceMetadata");
-            return  -EINVAL;
-        }
         total_tracks.resize(track_count_total);
         btSourceMetadata.track_count = track_count_total;
         btSourceMetadata.tracks = total_tracks.data();
+
         //Get the metadata of all tracks on different stream o/ps
         for (int i = 0; i < astream_out_list.size(); i++) {
             struct playback_track_metadata* track = astream_out_list[i]->btSourceMetadata.tracks;
@@ -3602,7 +3605,7 @@ int StreamOutPrimary::SetAggregateSourceMetadata(bool voice_active) {
                 ++track;
                 ++btSourceMetadata.tracks;
             }
-       }
+        }
         btSourceMetadata.tracks = total_tracks.data();
 
         // pass the metadata to PAL
@@ -3625,8 +3628,7 @@ StreamOutPrimary::StreamOutPrimary(
                         visualizer_hal_stop_output visualizer_stop_output):
     StreamPrimary(handle, devices, config),
     mAndroidOutDevices(devices),
-    flags_(flags),
-    btSourceMetadata{0, nullptr}
+    flags_(flags)
 {
     stream_ = std::shared_ptr<audio_stream_out> (new audio_stream_out());
     std::shared_ptr<AudioDevice> adevice = AudioDevice::GetInstance();
@@ -4252,19 +4254,15 @@ int StreamInPrimary::SetAggregateSinkMetadata(bool voice_active) {
             //total tracks on stream i/ps
             track_count_total += astream_in_list[i]->btSinkMetadata.track_count;
         }
-        if (track_count_total == 0) {
-             AHAL_DBG("total track count is 0, return without settng SinkMetadata");
-             return -EINVAL;
-        }
 
         total_tracks.resize(track_count_total);
         btSinkMetadata.track_count = track_count_total;
         btSinkMetadata.tracks = total_tracks.data();
+
         //Get the metadata of all tracks on different stream i/ps
         for (int i = 0; i < astream_in_list.size(); i++) {
             struct record_track_metadata* track = astream_in_list[i]->btSinkMetadata.tracks;
             ssize_t track_count = astream_in_list[i]->btSinkMetadata.track_count;
-            // check tracks size in this stream metadata not to exceed total count
             while (track_count && track) {
                 btSinkMetadata.tracks->source = track->source;
                 AHAL_DBG("Aggregated Sink metadata source:%d", btSinkMetadata.tracks->source);
