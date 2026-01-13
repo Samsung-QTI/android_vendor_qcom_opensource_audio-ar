@@ -464,6 +464,18 @@ int AudioDevice::CreateAudioPatch(audio_patch_handle_t *handle,
             patch_type = AudioPatch::PATCH_PLAYBACK;
             AHAL_DBG("Playback patch from mix handle %d to device %x",
                   io_handle, AudioExtn::get_device_types(device_types));
+#ifdef SEC_AUDIO_FMRADIO
+            {
+                struct str_parms *parms = str_parms_create();
+
+                if (parms) {
+                    str_parms_add_int(parms, AUDIO_PARAMETER_SEC_LOCAL_FMRADIO_ROUTING,
+                                      AudioExtn::get_device_types(device_types));
+                    AudioExtn::audio_extn_set_parameters(adev_, parms);
+                    str_parms_destroy(parms);
+                }
+            }
+#endif
             break;
         case AUDIO_PORT_TYPE_SESSION:
         case AUDIO_PORT_TYPE_NONE:
@@ -502,8 +514,23 @@ int AudioDevice::CreateAudioPatch(audio_patch_handle_t *handle,
         patch->sinks = sinks;
     }
 
+#ifdef SEC_AUDIO_CALL
+    if (primary_out_io_handle == io_handle) {
+        std::shared_ptr<StreamOutPrimary> astream_out = OutGetStream(PAL_STREAM_VOIP_RX);
+
+        if (voice_ && patch_type == AudioPatch::PATCH_PLAYBACK) {
+            ret = voice_->RouteStream(device_types);
+        }
+
+        if (astream_out && (voice_->mode_ == AUDIO_MODE_IN_COMMUNICATION)) {
+            AHAL_DBG("Playback route for voip rx");
+            ret |= astream_out->RouteStream(device_types);
+        }
+    }
+#else
     if (voice_ && patch_type == AudioPatch::PATCH_PLAYBACK)
         ret = voice_->RouteStream(device_types);
+#endif
     ret |= stream->RouteStream(device_types);
 
     if (ret) {
@@ -700,6 +727,17 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
             goto exit;
         }
     }
+
+#ifdef SEC_AUDIO_CALL
+    if (flags & AUDIO_OUTPUT_FLAG_PRIMARY) {
+        if (adevice->primary_out_io_handle == AUDIO_IO_HANDLE_NONE) {
+            adevice->primary_out_io_handle = handle;
+        } else {
+            AHAL_ERR("Primary output is already opened");
+        }
+    }
+#endif
+
 exit:
     AHAL_DBG("Exit ret: %d", ret);
     return ret;
@@ -746,6 +784,7 @@ void adev_close_input_stream(struct audio_hw_device *dev,
     AHAL_DBG("Enter:stream_handle(%p)", astream_in.get());
 
     adevice->CloseStreamIn(astream_in);
+    //adevice->mute_ = false;
 
     AHAL_DBG("Exit");
 }
@@ -1171,6 +1210,13 @@ int AudioDevice::Init(hw_device_t **device, const hw_module_t *module) {
     adev_->perf_lock_opts[2] = 0x40C00000;
     adev_->perf_lock_opts[3] = 0x1;
     adev_->perf_lock_opts_size = 4;
+
+#ifdef SEC_AUDIO_CALL
+#define VOICEMMODE1_VSID 0x11C05000
+    adev_->vsid = VOICEMMODE1_VSID;
+    adev_->vsid_realcalling = false;
+    adev_->voip_wificalling = false;
+#endif
 
     adev_->use_spk_whs_combo =
             property_get_bool("vendor.audio.feature.use_spkr_hs_combo.enable", false);
@@ -2181,6 +2227,9 @@ void AudioDevice::FillAndroidDeviceMap() {
 
     android_device_map_.insert(std::make_pair(AUDIO_DEVICE_IN_BUILTIN_MIC, PAL_DEVICE_IN_HANDSET_MIC));
     android_device_map_.insert(std::make_pair(AUDIO_DEVICE_IN_BACK_MIC, PAL_DEVICE_IN_SPEAKER_MIC));
+#ifdef SEC_AUDIO_COMMON
+    android_device_map_.insert(std::make_pair(AUDIO_DEVICE_IN_2MIC, PAL_DEVICE_IN_SPEAKER_MIC));
+#endif
     //android_device_map_.insert(std::make_pair(AUDIO_DEVICE_IN_COMMUNICATION, PAL_DEVICE_IN_COMMUNICATION));
     //android_device_map_.insert(std::make_pair(AUDIO_DEVICE_IN_AMBIENT, PAL_DEVICE_IN_AMBIENT);
     android_device_map_.insert(std::make_pair(AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET, PAL_DEVICE_IN_BLUETOOTH_SCO_HEADSET));
@@ -2941,3 +2990,22 @@ closeFile:
 done:
     return ret;
 }
+
+#ifdef SEC_AUDIO_COMMON
+std::shared_ptr<StreamOutPrimary> AudioDevice::OutGetStream(pal_stream_type_t pal_stream_type) {
+    std::shared_ptr<StreamOutPrimary> astream_out = NULL;
+    out_list_mutex.lock();
+    for (int i = 0; i < stream_out_list_.size(); i++) {
+        if (stream_out_list_[i]->streamAttributes_.type == pal_stream_type) {
+            AHAL_VERBOSE("Found stream associated with pal_stream_type");
+            astream_out = stream_out_list_[i];
+            break;
+        }
+    }
+    out_list_mutex.unlock();
+    if (astream_out)
+        AHAL_VERBOSE("astream_out(%p)", astream_out->stream_.get());
+
+    return astream_out;
+}
+#endif

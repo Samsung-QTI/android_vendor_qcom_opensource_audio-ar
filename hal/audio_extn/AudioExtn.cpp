@@ -68,7 +68,7 @@
 #include "AudioDevice.h"
 #include "PalApi.h"
 #include <cutils/properties.h>
-#include "AudioCommon.h"
+//#include "AudioCommon.h" //it is in fsalgo_calib.h
 #define AUDIO_OUTPUT_BIT_WIDTH ((config_->offload_info.bit_width == 32) ? 24:config_->offload_info.bit_width)
 
 #ifdef PAL_HIDL_ENABLED

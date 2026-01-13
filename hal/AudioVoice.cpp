@@ -43,6 +43,10 @@
 #include "AudioCommon.h"
 #include <audio_extn/AudioExtn.h>
 
+#ifdef SEC_AUDIO_COMMON
+#include "AudioDevice.h"
+#endif
+
 #ifndef AUDIO_MODE_CALL_SCREEN
 #define AUDIO_MODE_CALL_SCREEN 4
 #endif
@@ -53,6 +57,24 @@ int AudioVoice::SetMode(const audio_mode_t mode) {
 
     AHAL_DBG("Enter: mode: %d", mode);
     if (mode_ != mode) {
+#ifdef SEC_AUDIO_CALL
+        if (mode == AUDIO_MODE_IN_CALL) {
+            voice_session_t *session = NULL;
+            std::shared_ptr<AudioDevice> adevice =
+                AudioDevice::GetInstance();
+
+            for (int i = 0; i < max_voice_sessions_; i++) {
+                if (adevice->vsid == voice_.session[i].vsid) {
+                    session = &voice_.session[i];
+                    break;
+                }
+            }
+            if (session) {
+                session->state.new_ = CALL_ACTIVE;
+                AHAL_DBG("new state is ACTIVE for vsid:%x", session->vsid);
+            }
+        }
+#endif
         /*start a new session for full voice call*/
         if ((mode ==  AUDIO_MODE_CALL_SCREEN && mode_ == AUDIO_MODE_IN_CALL)||
            (mode == AUDIO_MODE_IN_CALL && mode_ == AUDIO_MODE_CALL_SCREEN)){
@@ -88,6 +110,92 @@ int AudioVoice::VoiceSetParameters(const char *kvpairs) {
        return  -EINVAL;
 
     AHAL_DBG("Enter params: %s", kvpairs);
+
+#ifdef SEC_AUDIO_CALL
+#define AUDIO_PARAMETER_KEY_SAMSUNG_SIM_SLOT "g_call_sim_slot"
+    std::shared_ptr<AudioDevice> adevice = AudioDevice::GetInstance();
+
+    err = str_parms_get_int(parms, AUDIO_PARAMETER_KEY_SAMSUNG_SIM_SLOT, &value);
+    if (err >= 0) {
+        str_parms_del(parms, AUDIO_PARAMETER_KEY_SAMSUNG_SIM_SLOT);
+
+#define SIM_SLOT_REAL_CALL_SIM_1 0x01
+#define SIM_SLOT_REAL_CALL_SIM_2 0x02
+#define SIM_SLOT_EMERGENCY_SIM_X 0x10
+
+        switch(value) {
+            case SIM_SLOT_REAL_CALL_SIM_1:
+                adevice->vsid = VOICEMMODE1_VSID;
+                break;
+
+            case SIM_SLOT_REAL_CALL_SIM_2:
+#ifdef SEC_AUDIO_USE_SINGLE_VSID
+                adevice->vsid = VOICEMMODE1_VSID;
+#else
+                adevice->vsid = VOICEMMODE2_VSID;
+#endif
+                break;
+
+            case SIM_SLOT_EMERGENCY_SIM_X:
+                if(adevice->vsid_realcalling) {
+                    UpdateCallState(adevice->vsid, CALL_INACTIVE);
+                }
+
+                switch(adevice->vsid) {
+                    case VOICEMMODE1_VSID:
+#ifdef SEC_AUDIO_USE_SINGLE_VSID
+                        adevice->vsid = VOICEMMODE1_VSID;
+#else
+                        adevice->vsid = VOICEMMODE2_VSID;
+#endif
+                        break;
+
+                    case VOICEMMODE2_VSID:
+                        adevice->vsid = VOICEMMODE1_VSID;
+                        break;
+
+                    default:
+                        adevice->vsid = -1;
+                        ret = -EINVAL;
+                        goto done;
+                }
+
+                if(adevice->vsid_realcalling) {
+                    ret = UpdateCallState(adevice->vsid, CALL_ACTIVE);
+                }
+                break;
+
+            default:
+                adevice->vsid = -1;
+                ret = -EINVAL;
+                goto done;
+        }
+    }
+
+#define AUDIO_PARAMETER_KEY_SAMSUNG_CALL_STATE "g_call_state"
+
+    err = str_parms_get_int(parms, AUDIO_PARAMETER_KEY_SAMSUNG_CALL_STATE, &value);
+    if (err >= 0) {
+        str_parms_del(parms, AUDIO_PARAMETER_KEY_SAMSUNG_CALL_STATE);
+
+#define CALL_STATE_REAL_CALL_CLR 0x01
+#define CALL_STATE_REAL_CALL_SET 0x02
+#define CALL_STATE_WIFI_CALL_CLR 0x10
+#define CALL_STATE_WIFI_CALL_SET 0x20
+
+        if(value & CALL_STATE_REAL_CALL_SET) {
+            adevice->vsid_realcalling = true;
+        } else if(value & CALL_STATE_REAL_CALL_CLR) {
+            adevice->vsid_realcalling = false;
+        } else if(value & CALL_STATE_WIFI_CALL_SET) {
+            adevice->voip_wificalling = true;
+        } else if(value & CALL_STATE_WIFI_CALL_CLR) {
+            adevice->voip_wificalling = false;
+        } else {
+            ret = -EINVAL;
+            goto done;
+        }
+#else
     err = str_parms_get_int(parms, AUDIO_PARAMETER_KEY_VSID, &value);
     if (err >= 0) {
         uint32_t vsid = value;
@@ -109,6 +217,7 @@ int AudioVoice::VoiceSetParameters(const char *kvpairs) {
             ret = -EINVAL;
             goto done;
         }
+#endif
     }
     err = str_parms_get_str(parms, AUDIO_PARAMETER_KEY_TTY_MODE, c_value, sizeof(c_value));
     if (err >= 0) {

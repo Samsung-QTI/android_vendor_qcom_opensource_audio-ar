@@ -75,6 +75,10 @@
 #define COMPRESS_CAPTURE_AAC_MAX_OUTPUT_BUFFER_SIZE 2048
 #define COMPRESS_CAPTURE_AAC_PCM_SAMPLES_IN_FRAME 1024
 
+#ifdef SEC_AUDIO_FMRADIO
+#define AUDIO_PARAMETER_SEC_LOCAL_FMRADIO_ROUTING "l_fmradio_routing"
+#endif
+
 typedef enum {
     TAG_MICROPHONE_CHARACTERISTIC,
     TAG_SND_DEVICES,
@@ -181,6 +185,11 @@ public:
     int dp_controller;
     int dp_stream;
     int num_va_sessions_ = 0;
+#ifdef SEC_AUDIO_CALL
+    uint32_t vsid;
+    bool vsid_realcalling;
+    bool voip_wificalling;
+#endif
     pal_speaker_rotation_type current_rotation;
     static card_status_t sndCardState;
     std::mutex adev_init_mutex;
@@ -226,7 +235,10 @@ public:
     static void xml_char_data_handler(void *userdata, const XML_Char *s, int len);
     static int parse_xml();
     const char* getAndroidDevice(pal_device_id_t id);
-
+#ifdef SEC_AUDIO_CALL
+    audio_io_handle_t primary_out_io_handle = AUDIO_IO_HANDLE_NONE;
+    std::shared_ptr<StreamOutPrimary> OutGetStream(pal_stream_type_t pal_stream_type);
+#endif
 protected:
     AudioDevice() {}
     std::shared_ptr<AudioVoice> VoiceInit();

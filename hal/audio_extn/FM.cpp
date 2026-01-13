@@ -80,6 +80,10 @@ static struct fm_module fm = {
     .stream_handle = 0
 };
 
+#ifdef SEC_AUDIO_FMRADIO
+    static int sFmOutDevice = AUDIO_DEVICE_NONE;
+#endif
+
 int32_t fm_set_volume(float value, bool persist=false)
 {
     int32_t ret = 0;
@@ -224,6 +228,54 @@ int32_t fm_stop()
     return 0;
 }
 
+#ifdef SEC_AUDIO_FMRADIO
+int32_t fm_set_device(int device_id)
+{
+    int32_t ret = 0;
+    const int num_pal_devs = 2;
+    struct pal_channel_info ch_info;
+    struct pal_device pal_devs[num_pal_devs];
+    pal_device_id_t pal_device_id = PAL_DEVICE_OUT_SPEAKER;
+
+    AHAL_DBG("Enter");
+
+    if(device_id == AUDIO_DEVICE_OUT_SPEAKER)
+        pal_device_id = PAL_DEVICE_OUT_SPEAKER;
+    else if(device_id == AUDIO_DEVICE_OUT_WIRED_HEADSET)
+        pal_device_id = PAL_DEVICE_OUT_WIRED_HEADSET;
+    else if(device_id == AUDIO_DEVICE_OUT_WIRED_HEADPHONE)
+        pal_device_id = PAL_DEVICE_OUT_WIRED_HEADPHONE;
+    else
+    {
+        AHAL_ERR("Unsupported device_id %d",device_id);
+        return -EINVAL;
+    }
+
+    ch_info.channels = CHANNELS;
+    ch_info.ch_map[0] = PAL_CHMAP_CHANNEL_FL;
+    ch_info.ch_map[1] = PAL_CHMAP_CHANNEL_FR;
+
+    for(int i = 0; i < 2; ++i){
+        // TODO: remove hardcoded device id & pass adev to getPalDeviceIds instead
+        pal_devs[i].id = i ? PAL_DEVICE_IN_FM_TUNER : pal_device_id;
+        pal_devs[i].config.sample_rate = SAMPLE_RATE;
+        pal_devs[i].config.bit_width = BIT_WIDTH;
+        pal_devs[i].config.ch_info = ch_info;
+        pal_devs[i].config.aud_fmt_id = PAL_AUDIO_FMT_PCM_S16_LE;
+    }
+
+    ret = pal_stream_set_device(fm.stream_handle, num_pal_devs, pal_devs);
+    if (ret) {
+        AHAL_ERR("failed to set device. Error %d" ,ret);
+        return ret;
+    }
+    fm_set_volume(fm.volume, true);
+
+    AHAL_DBG("Exit");
+    return ret;
+}
+#endif
+
 void fm_get_parameters(std::shared_ptr<AudioDevice> adev __unused, struct str_parms *query, struct str_parms *reply)
 {
     int ret;
@@ -281,7 +333,7 @@ void fm_set_parameters(std::shared_ptr<AudioDevice> adev, struct str_parms *parm
     ret = str_parms_get_str(parms, AUDIO_PARAMETER_KEY_FM_ROUTING, value, sizeof(value));
     if (ret >= 0 && fm.running) {
         val = atoi(value);
-       AHAL_DBG("FM usecase");
+        AHAL_DBG("FM usecase");
         if (val && (val & AUDIO_DEVICE_OUT_FM)){
             fm_set_volume(0, false);
             fm_stop();
@@ -292,7 +344,7 @@ void fm_set_parameters(std::shared_ptr<AudioDevice> adev, struct str_parms *parm
 
     ret = str_parms_get_str(parms, AUDIO_PARAMETER_KEY_FM_VOLUME, value, sizeof(value));
     if (ret >= 0) {
-       AHAL_DBG("Param: set volume");
+        AHAL_DBG("Param: set volume");
         if (sscanf(value, "%f", &vol) != 1){
             AHAL_ERR("error in retrieving fm volume");
             return;
@@ -316,6 +368,57 @@ void fm_set_parameters(std::shared_ptr<AudioDevice> adev, struct str_parms *parm
         if (value[0] == '1')
             fm_set_volume(fm.volume);
     }
+
+#ifdef SEC_AUDIO_FMRADIO
+    ret = str_parms_get_str(parms, AUDIO_PARAMETER_SEC_LOCAL_FMRADIO_MODE, value, sizeof(value));
+    if (ret >= 0) {
+        if (strncmp(value, "on", 2) == 0) {
+            if (fm.running == false) {
+                fm_start(adev, sFmOutDevice);
+            }
+        } else if (strncmp(value, "off", 3) == 0) {
+            if (fm.running == true) {
+                fm_stop();
+            }
+        }
+    }
+
+    ret = str_parms_get_str(parms, AUDIO_PARAMETER_SEC_LOCAL_FMRADIO_VOLUME, value, sizeof(value));
+    if (ret >= 0) {
+        char *end;
+        float float_value = strtof(value, &end);
+        fm_set_volume(float_value, true);
+    }
+
+    ret = str_parms_get_str(parms, AUDIO_PARAMETER_SEC_GLOBAL_FMRADIO_MUTE, value, sizeof(value));
+    if (ret >= 0){
+        if (strncmp(value, "true", 4) == 0)  {
+            fm.muted = true;
+            fm_set_volume(0.0, false);
+        } else {
+            fm.muted = false;
+            fm_set_volume(fm.volume, false);
+        }
+    }
+
+    ret = str_parms_get_str(parms, AUDIO_PARAMETER_SEC_LOCAL_FMRADIO_ROUTING, value, sizeof(value));
+    if (ret >= 0) {
+        val = atoi(value);
+        if (val > 0) {
+            if ((val != (int) sFmOutDevice) &&
+                (popcount(val) == 1) &&
+                (val & (AUDIO_DEVICE_OUT_SPEAKER |
+                        AUDIO_DEVICE_OUT_WIRED_HEADSET |
+                        AUDIO_DEVICE_OUT_WIRED_HEADPHONE))) {
+                sFmOutDevice = (audio_devices_t) val;
+                if (fm.running == true && fm.stream_handle) {
+                    fm_set_volume(0, false);
+                    fm_set_device(sFmOutDevice);
+                }
+            }
+        }
+    }
+#endif
 
     AHAL_DBG("exit");
 }
