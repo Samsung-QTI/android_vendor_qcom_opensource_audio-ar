@@ -81,6 +81,22 @@ typedef enum {
     LE_AUDIO_HARDWARE_OFFLOAD_DECODING_DATAPATH,
 }tSESSION_TYPE;
 
+
+// lux mmi
+typedef enum {
+    MMI_NONE,
+    MANUAL_MMI_SPEAKER_LEFT_TOP,
+    MANUAL_MMI_SPEAKER_RIGHT_TOP,
+    MANUAL_MMI_SPEAKER_LEFT_BOTTOM,
+    MANUAL_MMI_SPEAKER_RIGHT_BOTTOM,
+    MANUAL_MMI_SPEAKER,
+    MANUAL_MMI_HEADPHONE,
+    MANUAL_MMI_MAINMIC,
+    MANUAL_MMI_SUBMIC,
+    MANUAL_MMI_HSMIC,
+}mmi_type;
+// lux mmi
+
 // start of CompressCapture
 class CompressCapture {
    public:
@@ -162,6 +178,13 @@ public:
     static void audio_extn_fm_init(bool enabled=true);
     static void audio_extn_fm_set_parameters(std::shared_ptr<AudioDevice> adev, struct str_parms *params);
     static void audio_extn_fm_get_parameters(std::shared_ptr<AudioDevice> adev, struct str_parms *query, struct str_parms *reply);
+
+    // LUX MMI
+    static void lux_audio_mmi_setparameter(std::shared_ptr<AudioDevice> adev, struct str_parms *parms);
+    static int get_mmi_out_status();
+    static int get_mmi_in_status();
+    static void lux_output_custom_key(struct pal_device* OutDevice);
+    static void lux_input_custom_key(struct pal_device* InDevice);
 
     //Karaoke
     int karaoke_open(pal_device_id_t device_out, pal_stream_callback pal_callback, pal_channel_info ch_info);

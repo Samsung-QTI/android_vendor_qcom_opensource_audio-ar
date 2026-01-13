@@ -78,6 +78,8 @@
 #include <pal_server_wrapper.h>
 
 #include <vendor/qti/hardware/pal/1.0/IPAL.h>
+//P86801AA1, zhouweijie.lux, ADD, 2025/08/20, add mmi test
+#include "fsalgo_calib.h"
 using vendor::qti::hardware::pal::V1_0::IPAL;
 using vendor::qti::hardware::pal::V1_0::implementation::PAL;
 #ifdef AGM_HIDL_ENABLED
@@ -389,6 +391,52 @@ void AudioExtn::audio_extn_get_parameters(std::shared_ptr<AudioDevice> adev,
        struct str_parms *query, struct str_parms *reply)
 {
     char *kv_pairs = NULL;
+    char str_tmp[256] = {0}; //P86801AA1, zhouweijie.lux, ADD, 2025/08/20, add mmi test
+    int ret = 0;
+    char value[32] = {0};
+
+//+P86801AA1, zhouweijie.lux, ADD, 2025/08/20, add mmi test
+    ret = str_parms_get_str(query, "mmitest", value, sizeof(value));
+    AHAL_INFO("ret:%d", ret);
+    if (ret >= 0) {
+        AHAL_INFO("status:%d", cali_data.calib_status);
+        switch(cali_data.calib_status)
+        {
+            case CALIB_STATUS_NOTIN:
+            case CALIB_STATUS_ONGING:
+                str_parms_add_str(reply, "mmitest", "waiting...");
+                break;
+            case CALIB_STATUS_OK:
+                sprintf(str_tmp, "ok;Re1=%1.2f,Re2=%1.2f,Re3=%1.2f,Re4=%1.2f,F01=%1.0f,F02=%1.0f,F03=%1.0f,F04=%1.0f",
+                cali_data.calib_Re[0],
+                cali_data.calib_Re[1],
+                cali_data.calib_Re[2],
+                cali_data.calib_Re[3],
+                cali_data.calib_F0[0],
+                cali_data.calib_F0[1],
+                cali_data.calib_F0[2],
+                cali_data.calib_F0[3]);
+                memset(&cali_data, 0, sizeof(cali_data));
+                break;
+            case CALIB_STATUS_ERROR:
+                sprintf(str_tmp, "error;Re1=%1.2f,Re2=%1.2f,Re3=%1.2f,Re4=%1.2f,F01=%1.0f,F02=%1.0f,F03=%1.0f,F04=%1.0f",
+                cali_data.calib_Re[0],
+                cali_data.calib_Re[1],
+                cali_data.calib_Re[2],
+                cali_data.calib_Re[3],
+                cali_data.calib_F0[0],
+                cali_data.calib_F0[1],
+                cali_data.calib_F0[2],
+                cali_data.calib_F0[3]);
+                memset(&cali_data, 0, sizeof(cali_data));
+                break;
+            default:
+                str_parms_add_str(reply, "mmitest", "unknow status...");
+                break;
+        }
+        str_parms_add_str(reply, "smartpa", str_tmp);
+    }
+//-P86801AA1, zhouweijie.lux, ADD, 2025/08/20, add mmi test
 
     audio_extn_fm_get_parameters(adev, query, reply);
     GetProxyParameters(adev, query, reply);
@@ -399,10 +447,225 @@ void AudioExtn::audio_extn_get_parameters(std::shared_ptr<AudioDevice> adev,
     free(kv_pairs);
 }
 
+/* +P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
+/*mmi test keyvalue*/
+#define AUDIO_PARAMETER_KEY_AUDIO_MMI_TEST                "mmitest"
+#define AUDIO_PARAMETER_KEY_INPUT_DEVICE_MMI_TEST         "inputdevice"
+#define AUDIO_PARAMETER_KEY_OUTPUT_DEVICE_MMI_TEST        "outputdevice"
+#define AUDIO_PARAMETER_KEY_SPK_CALIBRATE                 "spk_calibrate"
+/*mmi test key value buffer size*/
+#define MMI_KEY_VALUE_SIZE 30
+#define TABLE_SIZE(a) 		sizeof(a)/sizeof(a[0])
+
+int mmitest_out_status = 0;
+int mmitest_in_status = 0;
+
+struct mmitest_param {
+    mmi_type audio_mmi_type;
+    char value[MMI_KEY_VALUE_SIZE];
+};
+
+struct mmitest_param mmiytpe_table[] = {
+    {MANUAL_MMI_SPEAKER,"speaker"},
+    {MANUAL_MMI_SPEAKER_LEFT_TOP,"speaker_left_top"},
+    {MANUAL_MMI_SPEAKER_RIGHT_TOP,"speaker_right_top"},
+    {MANUAL_MMI_SPEAKER_LEFT_BOTTOM,"speaker_left_bottom"},
+    {MANUAL_MMI_SPEAKER_RIGHT_BOTTOM,"speaker_right_bottom"},
+    {MANUAL_MMI_HEADPHONE,"headphone"},
+    {MANUAL_MMI_MAINMIC,"mainmic"},
+    {MANUAL_MMI_SUBMIC,"submic"},
+    {MANUAL_MMI_HSMIC,"hsmic"},
+};
+
+struct choose_palid_custkey {
+    pal_device_id_t pal_id;
+    mmi_type audio_mmi_type;
+    char customkey[PAL_MAX_CUSTOM_KEY_SIZE];
+};
+
+struct choose_palid_custkey palid_custkey_table[] = {
+    {PAL_DEVICE_OUT_SPEAKER, MANUAL_MMI_SPEAKER, "speaker-mmi"},
+    {PAL_DEVICE_OUT_SPEAKER, MANUAL_MMI_SPEAKER_LEFT_TOP, "speaker-left-top"},
+    {PAL_DEVICE_OUT_SPEAKER, MANUAL_MMI_SPEAKER_RIGHT_TOP, "speaker-right-top"},
+    {PAL_DEVICE_OUT_SPEAKER, MANUAL_MMI_SPEAKER_LEFT_BOTTOM, "speaker-left-bottom"},
+    {PAL_DEVICE_OUT_SPEAKER, MANUAL_MMI_SPEAKER_RIGHT_BOTTOM, "speaker-right-bottom"},
+    {PAL_DEVICE_OUT_WIRED_HEADSET, MANUAL_MMI_HEADPHONE, "headphone-mmi"},
+    {PAL_DEVICE_IN_HANDSET_MIC, MANUAL_MMI_MAINMIC, "mainmic-mmi"},
+    {PAL_DEVICE_IN_HANDSET_MIC, MANUAL_MMI_SUBMIC, "submic-mmi"},
+    {PAL_DEVICE_IN_WIRED_HEADSET, MANUAL_MMI_HSMIC, "hsmic-mmi"},
+};
+
+void lux_choose_mmistatus_for_device_test(struct str_parms *params, int *in_status, int *out_status) {
+    char value[MMI_KEY_VALUE_SIZE] = {0};
+
+    if (str_parms_get_str(params, AUDIO_PARAMETER_KEY_INPUT_DEVICE_MMI_TEST, value, sizeof(value)) >= 0) {
+        str_parms_del(params, AUDIO_PARAMETER_KEY_INPUT_DEVICE_MMI_TEST);
+        /*intput_device mmi test*/
+        /*if (0 == strcmp(value, "mainmic")) {
+            *in_status = MANUAL_MMI_MAINMIC;
+        }
+        if (0 == strcmp(value, "submic")) {
+            *in_status = MANUAL_MMI_SUBMIC;
+        }
+        if (0 == strcmp(value, "hsmic")) {
+            *in_status = MANUAL_MMI_HSMIC;
+        }*/
+        /*find input_device mmi type by mmitest params*/
+        for(int i = 0; i < TABLE_SIZE(mmiytpe_table); i++) {
+            if(strcmp(value, mmiytpe_table[i].value) == 0) {
+                *in_status = mmiytpe_table[i].audio_mmi_type;
+                break;
+            }
+        }
+
+    } else if (str_parms_get_str(params, AUDIO_PARAMETER_KEY_OUTPUT_DEVICE_MMI_TEST, value, sizeof(value)) >= 0) {
+        str_parms_del(params, AUDIO_PARAMETER_KEY_OUTPUT_DEVICE_MMI_TEST);
+        /*ouput_device mmi test*/
+        /*if (0 == strcmp(value, "speaker_left_top")) {
+            *out_status = MANUAL_MMI_SPEAKER_LEFT_TOP;
+        }
+        if (0 == strcmp(value, "speaker_right_top")) {
+            *out_status = MANUAL_MMI_SPEAKER_RIGHT_TOP;
+        }
+        if (0 == strcmp(value, "speaker_left_bottom")) {
+            *out_status = MANUAL_MMI_SPEAKER_LEFT_BOTTOM;
+        }
+        if (0 == strcmp(value, "speaker_right_bottom")) {
+            *out_status = MANUAL_MMI_SPEAKER_RIGHT_BOTTOM;
+        }
+        if (0 == strcmp(value, "speaker")) {
+            *out_status = MANUAL_MMI_SPEAKER;
+        }
+        if (0 == strcmp(value, "headphone")) {
+            *out_status = MANUAL_MMI_HEADPHONE;
+        }*/
+        /*find output_device mmi type by mmitest params*/
+        for(int i = 0; i < TABLE_SIZE(mmiytpe_table); i++) {
+            if(strcmp(value, mmiytpe_table[i].value) == 0) {
+                *out_status = mmiytpe_table[i].audio_mmi_type;
+                break;
+            }
+        }
+    }
+}
+
+void AudioExtn::lux_audio_mmi_setparameter(std::shared_ptr<AudioDevice> adev, struct str_parms *params)
+{
+    char value[MMI_KEY_VALUE_SIZE] = {0};
+    int  status = 0;
+    char *kv_pairs = str_parms_to_str(params);
+    struct smartpa_cali_data *spk_cali_data = &cali_data;
+
+    if (adev == NULL || kv_pairs == NULL) {
+        AHAL_ERR("adev =NULL or params =NULL");
+        return;
+    }
+    /*get keyvalue to select audio device mmitype*/
+    status = str_parms_get_str(params, AUDIO_PARAMETER_KEY_AUDIO_MMI_TEST, value, sizeof(value));
+    if (status >= 0) {
+        str_parms_del(params, AUDIO_PARAMETER_KEY_AUDIO_MMI_TEST);
+        if (0 == strcmp(value, "on")) {
+            /*choose mmistatus*/
+            lux_choose_mmistatus_for_device_test(params, &mmitest_in_status, &mmitest_out_status);
+            if(str_parms_get_str(params, AUDIO_PARAMETER_KEY_SPK_CALIBRATE, value, sizeof(value)) >= 0) {
+                fs18xx_cali(spk_cali_data);
+            }
+        } else if (0 == strcmp(value, "off")) {
+            /*close mmi test*/
+            mmitest_out_status = MMI_NONE;
+            mmitest_in_status = MMI_NONE;
+        }
+        AHAL_INFO("audio mmi test input_mmi_type=%d , output_mmi_type=%d",
+            mmitest_in_status, mmitest_out_status);
+    }
+    AHAL_INFO("audio mmi test status %d", status);
+    return;
+}
+
+/* you can call this func in AHAL */
+int AudioExtn::get_mmi_out_status() {
+    return mmitest_out_status;
+}
+
+int AudioExtn::get_mmi_in_status() {
+    return mmitest_in_status;
+}
+
+// lux mmi
+void AudioExtn::lux_output_custom_key(struct pal_device* OutDevice) {
+        //add GM
+    int out_status = get_mmi_out_status();
+    if(out_status != MMI_NONE){
+        /*if(out_status == MANUAL_MMI_SPEAKER_LEFT_TOP) {
+            OutDevice->id = PAL_DEVICE_OUT_SPEAKER;
+            strlcpy(OutDevice->custom_config.custom_key, "speaker-left-top", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(out_status == MANUAL_MMI_SPEAKER_RIGHT_TOP) {
+            OutDevice->id = PAL_DEVICE_OUT_SPEAKER;
+            strlcpy(OutDevice->custom_config.custom_key, "speaker-right-top", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(out_status == MANUAL_MMI_SPEAKER_LEFT_BOTTOM) {
+            OutDevice->id = PAL_DEVICE_OUT_SPEAKER;
+            strlcpy(OutDevice->custom_config.custom_key, "speaker-left-bottom", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(out_status == MANUAL_MMI_SPEAKER_RIGHT_BOTTOM) {
+            OutDevice->id = PAL_DEVICE_OUT_SPEAKER;
+            strlcpy(OutDevice->custom_config.custom_key, "speaker-right-bottom", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(out_status == MANUAL_MMI_SPEAKER) {
+            OutDevice->id = PAL_DEVICE_OUT_SPEAKER;
+            strlcpy(OutDevice->custom_config.custom_key, "speaker-mmi", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(out_status == MANUAL_MMI_HEADPHONE){
+            strlcpy(OutDevice->custom_config.custom_key, "headphone-mmi", PAL_MAX_CUSTOM_KEY_SIZE);
+        }*/
+        /*find output_device custom_key by mmi type*/
+        for(int i = 0; i < TABLE_SIZE(palid_custkey_table); i++) {
+            if(out_status == palid_custkey_table[i].audio_mmi_type) {
+                //if (out_status != MANUAL_MMI_HEADPHONE) {
+                //    OutDevice->id = palid_custkey_table[i].pal_id;
+                //}
+                strlcpy(OutDevice->custom_config.custom_key, palid_custkey_table[i].customkey, PAL_MAX_CUSTOM_KEY_SIZE);
+                break;
+            }
+        }
+        AHAL_INFO("Setting OutDevice custom key as %s", OutDevice->custom_config.custom_key);
+    }
+}
+
+void AudioExtn::lux_input_custom_key(struct pal_device* InDevice) {
+        //add GM
+    int in_status = get_mmi_in_status();
+    if(in_status != MMI_NONE){
+        /*if(in_status == MANUAL_MMI_MAINMIC){
+            strlcpy(InDevice->custom_config.custom_key, "mainmic-mmi", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(in_status == MANUAL_MMI_SUBMIC){
+            strlcpy(InDevice->custom_config.custom_key, "submic-mmi", PAL_MAX_CUSTOM_KEY_SIZE);
+        }
+        if(in_status == MANUAL_MMI_HSMIC){
+            strlcpy(InDevice->custom_config.custom_key, "hsmic-mmi", PAL_MAX_CUSTOM_KEY_SIZE);
+        }*/
+        /*find input_device custom_key by mmi type*/
+        for(int i = 0; i < TABLE_SIZE(palid_custkey_table); i++) {
+            if(in_status == palid_custkey_table[i].audio_mmi_type) {
+                //if (in_status != MANUAL_MMI_HSMIC) {
+                //    InDevice->id = palid_custkey_table[i].pal_id;
+                //}
+                strlcpy(InDevice->custom_config.custom_key, palid_custkey_table[i].customkey, PAL_MAX_CUSTOM_KEY_SIZE);
+                break;
+            }
+        }
+        AHAL_INFO("Setting InDevice custom key as %s", InDevice->custom_config.custom_key);
+    }
+}
+/* -P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
+
 void AudioExtn::audio_extn_set_parameters(std::shared_ptr<AudioDevice> adev,
                                      struct str_parms *params){
     audio_extn_hfp_set_parameters(adev, params);
     audio_extn_fm_set_parameters(adev, params);
+    lux_audio_mmi_setparameter(adev, params);
 }
 
 int AudioExtn::get_controller_stream_from_params(struct str_parms *parms,

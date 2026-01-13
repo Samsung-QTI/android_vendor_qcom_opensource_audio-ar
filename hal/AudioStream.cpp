@@ -2376,7 +2376,10 @@ int StreamOutPrimary::RouteStream(const std::set<audio_devices_t>& new_devices_t
 
             strlcpy(mPalOutDevice[i].custom_config.custom_key, "",
                     sizeof(mPalOutDevice[i].custom_config.custom_key));
-
+            /* +P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
+            memset(mPalOutDevice[i].custom_config.custom_key, 0, PAL_MAX_CUSTOM_KEY_SIZE);
+            AudioExtn::lux_output_custom_key(mPalOutDevice);
+            /* -P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
             if (adevice->use_spk_whs_combo) {
                 if (mComboDevice && (mPalOutDeviceIds[i] == PAL_DEVICE_OUT_SPEAKER)) {
                     strlcpy(mPalOutDevice[i].custom_config.custom_key, "speaker-and-headphones",
@@ -2919,7 +2922,10 @@ int StreamOutPrimary::Open() {
         default:
             break;
     }
-
+    /* +P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
+    memset(mPalOutDevice->custom_config.custom_key, 0, PAL_MAX_CUSTOM_KEY_SIZE);
+    AudioExtn::lux_output_custom_key(mPalOutDevice);
+    /* -P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
     ret = pal_get_param(PAL_PARAM_ID_HIFI_PCM_FILTER,
                         (void **)&payload_hifiFilter, &param_size, nullptr);
 
@@ -4392,7 +4398,10 @@ int StreamInPrimary::RouteStream(const std::set<audio_devices_t>& new_devices, b
             }
             strlcpy(mPalInDevice[i].custom_config.custom_key, "",
                     sizeof(mPalInDevice[i].custom_config.custom_key));
-
+            /* +P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
+            memset(mPalInDevice[i].custom_config.custom_key, 0, PAL_MAX_CUSTOM_KEY_SIZE);
+            AudioExtn::lux_input_custom_key(mPalInDevice);
+            /* -P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
             /* HDR use case check */
             if (is_hdr_mode_enabled())
                 setup_hdr_usecase(&mPalInDevice[i]);
@@ -4653,7 +4662,10 @@ int StreamInPrimary::Open() {
     }
 
     AHAL_DBG("(%x:ret)", ret);
-
+    /* +P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
+    memset(mPalInDevice->custom_config.custom_key, 0, PAL_MAX_CUSTOM_KEY_SIZE);
+    AudioExtn::lux_input_custom_key(mPalInDevice);
+    /* -P86801AA1-1797, zhouweijie.lux, 2025.08.18, add for mmitest */
     ret = pal_stream_open(&streamAttributes_,
                          mAndroidInDevices.size(),
                          mPalInDevice,
@@ -5060,8 +5072,7 @@ StreamInPrimary::StreamInPrimary(audio_io_handle_t handle,
     audio_source_t source) :
     StreamPrimary(handle, devices, config),
     mAndroidInDevices(devices),
-    flags_(flags),
-    btSinkMetadata{0, nullptr}
+    flags_(flags)
 {
     stream_ = std::shared_ptr<audio_stream_in> (new audio_stream_in());
     std::shared_ptr<AudioDevice> adevice = AudioDevice::GetInstance();
@@ -5274,7 +5285,7 @@ StreamInPrimary::StreamInPrimary(audio_io_handle_t handle,
             uint8_t channels =
                 audio_channel_count_from_in_mask(config_.channel_mask);
             if (channels == 2) {
-                strlcat(mPalInDevice[i].custom_config.custom_key, "dual-mic-eans",
+                strlcpy(mPalInDevice[i].custom_config.custom_key, "dual-mic-eans",
                         sizeof(mPalInDevice[i].custom_config.custom_key));
                 AHAL_INFO("Setting custom key as %s", mPalInDevice[i].custom_config.custom_key);
             }
