@@ -161,12 +161,46 @@ PRODUCT_PACKAGES += audioadsprpcd
 PRODUCT_PACKAGES += vendor.qti.audio-adsprpc-service.rc
 PRODUCT_PACKAGES += android.hardware.audio.service_64
 PRODUCT_PACKAGES += android.hardware.audio.service_64.rc
+ifeq ($(filter $(PRODUCT_NAME_LX), P86801AA1 P86803AA1 P86801GA1 P86802AA1 P86802CA1 P86801JA1 P86801KA1 P86803DA1 P86803EA1), $(PRODUCT_NAME_LX)) #Global models customized audio param
+PRODUCT_PACKAGES += acdb_cal.acdb
+PRODUCT_PACKAGES += workspaceFileXml.qwsp
+PRODUCT_PACKAGES += bri_acdb_cal.acdb
+PRODUCT_PACKAGES += bri_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += chc_acdb_cal.acdb
+PRODUCT_PACKAGES += chc_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += eur_acdb_cal.acdb
+PRODUCT_PACKAGES += eur_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += koo_acdb_cal.acdb
+PRODUCT_PACKAGES += koo_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += la_acdb_cal.acdb
+PRODUCT_PACKAGES += la_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += mea_acdb_cal.acdb
+PRODUCT_PACKAGES += mea_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += sea_acdb_cal.acdb
+PRODUCT_PACKAGES += sea_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += swa_acdb_cal.acdb
+PRODUCT_PACKAGES += swa_workspaceFileXml.qwsp
+else ifeq ($(PRODUCT_NAME_LX), P86801EA1) #NA models customized audio param
+PRODUCT_PACKAGES += acdb_cal.acdb
+PRODUCT_PACKAGES += workspaceFileXml.qwsp
+PRODUCT_PACKAGES += att_acdb_cal.acdb
+PRODUCT_PACKAGES += att_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += canada_acdb_cal.acdb
+PRODUCT_PACKAGES += canada_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += tmo_acdb_cal.acdb
+PRODUCT_PACKAGES += tmo_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += vzw_acdb_cal.acdb
+PRODUCT_PACKAGES += vzw_workspaceFileXml.qwsp
+PRODUCT_PACKAGES += other_acdb_cal.acdb
+PRODUCT_PACKAGES += other_workspaceFileXml.qwsp
+else
 PRODUCT_PACKAGES += MTP_acdb_cal.acdb
 PRODUCT_PACKAGES += MTP_workspaceFileXml.qwsp
 PRODUCT_PACKAGES += MTP_usbc_acdb_cal.acdb
 PRODUCT_PACKAGES += MTP_usbc_workspaceFileXml.qwsp
 PRODUCT_PACKAGES += QRD_acdb_cal.acdb
 PRODUCT_PACKAGES += QRD_workspaceFileXml.qwsp
+endif
 PRODUCT_PACKAGES += fai_3.0.0_0.0_eai_1.00.pmd
 PRODUCT_PACKAGES += fai__3.0.0_0.0__eai_1.36_enpu2.pmd
 PRODUCT_PACKAGES += fai__2.0.0_0.1__3.0.0_0.0__eai_1.00.pmd
@@ -211,7 +245,6 @@ PRODUCT_COPY_FILES += \
     $(CONFIG_PAL_SRC_DIR)/resourcemanager_blair_qrd.xml:$(CONFIG_SKU_OUT_DIR)/resourcemanager_blair_qrd.xml \
     $(CONFIG_PAL_SRC_DIR)/usecaseKvManager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usecaseKvManager.xml \
     vendor/qcom/opensource/audio-hal/primary-hal/configs/common/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml \
-    frameworks/native/data/etc/android.hardware.audio.pro.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.pro.xml \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml
 
 PRODUCT_COPY_FILES += \
@@ -254,7 +287,6 @@ PRODUCT_COPY_FILES += \
     $(CONFIG_PAL_SRC_DIR)/resourcemanager_blair_qrd.xml:$(CONFIG_SKU_OUT_DIR)/resourcemanager_blair_qrd.xml \
     $(CONFIG_PAL_SRC_DIR)/usecaseKvManager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usecaseKvManager.xml \
     vendor/qcom/opensource/audio-hal/primary-hal/configs/common/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml \
-    frameworks/native/data/etc/android.hardware.audio.pro.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.pro.xml \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml
 
 #XML Audio configuration files

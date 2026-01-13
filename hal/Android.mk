@@ -85,7 +85,7 @@ LOCAL_SRC_FILES := \
     audio_extn/Gain.cpp \
     audio_extn/AudioExtn.cpp
 
-LOCAL_HEADER_LIBRARIES := libhardware_headers qti_audio_kernel_uapi
+LOCAL_HEADER_LIBRARIES := libhardware_headers qti_audio_kernel_uapi libacdb_headers
 
 LOCAL_SHARED_LIBRARIES := \
     libbase \
