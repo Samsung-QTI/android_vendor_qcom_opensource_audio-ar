@@ -27,9 +27,9 @@ LOCAL_ARM_MODE := arm
 
 LOCAL_VINTF_FRAGMENTS := ../configs/common/manifest_non_qmaa.xml
 
-ifeq ($(strip $(AUDIO_FEATURE_ENABLED_LSM_HIDL)),true)
-LOCAL_VINTF_FRAGMENTS += ../configs/common/manifest_non_qmaa_extn.xml
-endif
+#ifeq ($(strip $(AUDIO_FEATURE_ENABLED_LSM_HIDL)),true)
+#LOCAL_VINTF_FRAGMENTS += ../configs/common/manifest_non_qmaa_extn.xml
+#endif
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_EC_REF_CAPTURE)),true)
 LOCAL_CFLAGS += -DEC_REF_CAPTURE_ENABLED
