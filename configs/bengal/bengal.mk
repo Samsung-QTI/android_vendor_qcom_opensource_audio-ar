@@ -169,37 +169,37 @@ else
 PRODUCT_PACKAGES += android.hardware.audio.service
 PRODUCT_PACKAGES += android.hardware.audio.service.rc
 endif #TARGET_BOARD_SUFFIX
-PRODUCT_PACKAGES += MTP_acdb_cal.acdb
-PRODUCT_PACKAGES += MTP_workspaceFileXml.qwsp
-PRODUCT_PACKAGES += IDP_acdb_cal.acdb
-PRODUCT_PACKAGES += IDP_workspaceFileXml.qwsp
-ifeq ($(TARGET_HAS_QTI_OPTIMIZATIONS), true)
-PRODUCT_PACKAGES += IDP_qti_optimized_acdb_cal.acdb
-PRODUCT_PACKAGES += IDP_qti_optimized_workspaceFileXml.qwsp
-endif
-PRODUCT_PACKAGES += QRD_acdb_cal.acdb
-PRODUCT_PACKAGES += QRD_workspaceFileXml.qwsp
-PRODUCT_PACKAGES += IDP_scuba_acdb_cal.acdb
-PRODUCT_PACKAGES += IDP_scuba_workspaceFileXml.qwsp
-ifeq ($(TARGET_HAS_QTI_OPTIMIZATIONS), true)
-PRODUCT_PACKAGES += IDP_scuba_qti_optimized_acdb_cal.acdb
-PRODUCT_PACKAGES += IDP_scuba_qti_optimized_workspaceFileXml.qwsp
-endif
-PRODUCT_PACKAGES += QRD_scuba_acdb_cal.acdb
-PRODUCT_PACKAGES += QRD_scuba_workspaceFileXml.qwsp
-PRODUCT_PACKAGES += fai_3.0.0_0.0_eai_1.00.pmd
-PRODUCT_PACKAGES += fai__2.0.0_0.1__3.0.0_0.0__eai_1.00.pmd
-PRODUCT_PACKAGES += fai__2.2.0_0.1__3.0.0_0.0__eai_1.00.pmd
+#PRODUCT_PACKAGES += MTP_acdb_cal.acdb
+#PRODUCT_PACKAGES += MTP_workspaceFileXml.qwsp
+#PRODUCT_PACKAGES += IDP_acdb_cal.acdb
+#PRODUCT_PACKAGES += IDP_workspaceFileXml.qwsp
+#ifeq ($(TARGET_HAS_QTI_OPTIMIZATIONS), true)
+#PRODUCT_PACKAGES += IDP_qti_optimized_acdb_cal.acdb
+#PRODUCT_PACKAGES += IDP_qti_optimized_workspaceFileXml.qwsp
+#endif
+#PRODUCT_PACKAGES += QRD_acdb_cal.acdb
+#PRODUCT_PACKAGES += QRD_workspaceFileXml.qwsp
+#PRODUCT_PACKAGES += IDP_scuba_acdb_cal.acdb
+#PRODUCT_PACKAGES += IDP_scuba_workspaceFileXml.qwsp
+#ifeq ($(TARGET_HAS_QTI_OPTIMIZATIONS), true)
+#PRODUCT_PACKAGES += IDP_scuba_qti_optimized_acdb_cal.acdb
+#PRODUCT_PACKAGES += IDP_scuba_qti_optimized_workspaceFileXml.qwsp
+#endif
+#PRODUCT_PACKAGES += QRD_scuba_acdb_cal.acdb
+#PRODUCT_PACKAGES += QRD_scuba_workspaceFileXml.qwsp
+#PRODUCT_PACKAGES += fai_3.0.0_0.0_eai_1.00.pmd
+#PRODUCT_PACKAGES += fai__2.0.0_0.1__3.0.0_0.0__eai_1.00.pmd
+#PRODUCT_PACKAGES += fai__2.2.0_0.1__3.0.0_0.0__eai_1.00.pmd
 PRODUCT_PACKAGES += libhfp_pal
 PRODUCT_PACKAGES += libfmpal
 PRODUCT_PACKAGES += libqtigefar
-PRODUCT_PACKAGES += IDP_arrax_acdb_cal.acdb
-PRODUCT_PACKAGES += IDP_arrax_workspaceFileXml.qwsp
-PRODUCT_PACKAGES += QRD_arrax_acdb_cal.acdb
-PRODUCT_PACKAGES += QRD_arrax_workspaceFileXml.qwsp
-PRODUCT_PACKAGES += fai__2.0.0_0.1__3.0.0_0.0__eai_1.10.pmd
-PRODUCT_PACKAGES += fai__2.2.0_0.1__3.0.0_0.0__eai_1.10.pmd
-PRODUCT_PACKAGES += fai__4.6.1.5_0.0__3.0.0_0.0__3.1.1_0.0__3.2.0_0.0__eai_1.10_enpuv1.pmd
+#PRODUCT_PACKAGES += IDP_arrax_acdb_cal.acdb
+#PRODUCT_PACKAGES += IDP_arrax_workspaceFileXml.qwsp
+#PRODUCT_PACKAGES += QRD_arrax_acdb_cal.acdb
+#PRODUCT_PACKAGES += QRD_arrax_workspaceFileXml.qwsp
+#PRODUCT_PACKAGES += fai__2.0.0_0.1__3.0.0_0.0__eai_1.10.pmd
+#PRODUCT_PACKAGES += fai__2.2.0_0.1__3.0.0_0.0__eai_1.10.pmd
+#PRODUCT_PACKAGES += fai__4.6.1.5_0.0__3.0.0_0.0__3.1.1_0.0__3.2.0_0.0__eai_1.10_enpuv1.pmd
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_MCS)), true)
 PRODUCT_PACKAGES += libmcs
