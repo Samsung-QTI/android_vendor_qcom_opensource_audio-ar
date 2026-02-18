@@ -92,7 +92,6 @@ AUDIO_FEATURE_ENABLED_MCS := true
 ##AUDIO_FEATURE_FLAGS
 #AGM
 AUDIO_AGM := libagmclient
-AUDIO_AGM += libagmservice
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-impl
 ifneq ($(strip $(AUDIO_FEATURE_ENABLED_AGM_HIDL)), true)
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-service

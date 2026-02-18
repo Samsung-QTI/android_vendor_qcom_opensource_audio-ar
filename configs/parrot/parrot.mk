@@ -91,7 +91,6 @@ AUDIO_FEATURE_ENABLED_MCS := true
 ##AUDIO_FEATURE_FLAGS
 #AGM
 AUDIO_AGM := libagmclient
-AUDIO_AGM += libagmservice
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-impl
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-service
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-service.rc

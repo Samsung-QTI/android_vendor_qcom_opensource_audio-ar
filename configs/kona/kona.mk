@@ -87,7 +87,6 @@ AUDIO_FEATURE_ENABLED_BATTERY_LISTENER := true
 ##AUDIO_FEATURE_FLAGS
 #AGM	
 AUDIO_AGM := libclient_ipc
-AUDIO_AGM += libagmservice
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-impl
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-service
 AUDIO_AGM += vendor.qti.hardware.AGMIPC@1.0-service.rc
