@@ -128,20 +128,20 @@ AUDIO_HARDWARE += audio.primary.$(TARGET_BOARD_PLATFORM)
 #AUDIO_WRAPPER += libqahwwrapper
 
 # C2 Audio
-AUDIO_C2 := libqc2audio_base
-AUDIO_C2 += libqc2audio_utils
-AUDIO_C2 += libqc2audio_platform
-AUDIO_C2 += libqc2audio_core
-AUDIO_C2 += libqc2audio_basecodec
-AUDIO_C2 += libqc2audio_hooks
-AUDIO_C2 += libqc2audio_swaudiocodec
-AUDIO_C2 += libqc2audio_swaudiocodec_data_common
-AUDIO_C2 += libqc2audio_hwaudiocodec
-AUDIO_C2 += libqc2audio_hwaudiocodec_data_common
-AUDIO_C2 += vendor.qti.media.c2audio@1.0-service
-AUDIO_C2 += qc2audio_test
-AUDIO_C2 += libEvrcSwCodec
-AUDIO_C2 += libQcelp13SwCodec
+#AUDIO_C2 := libqc2audio_base
+#AUDIO_C2 += libqc2audio_utils
+#AUDIO_C2 += libqc2audio_platform
+#AUDIO_C2 += libqc2audio_core
+#AUDIO_C2 += libqc2audio_basecodec
+#AUDIO_C2 += libqc2audio_hooks
+#AUDIO_C2 += libqc2audio_swaudiocodec
+#AUDIO_C2 += libqc2audio_swaudiocodec_data_common
+#AUDIO_C2 += libqc2audio_hwaudiocodec
+#AUDIO_C2 += libqc2audio_hwaudiocodec_data_common
+#AUDIO_C2 += vendor.qti.media.c2audio@1.0-service
+#AUDIO_C2 += qc2audio_test
+#AUDIO_C2 += libEvrcSwCodec
+#AUDIO_C2 += libQcelp13SwCodec
 
 #HAL Test app
 #AUDIO_HAL_TEST_APPS := hal_play_test
@@ -150,12 +150,12 @@ AUDIO_C2 += libQcelp13SwCodec
 PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
 #PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
 #PRODUCT_PACKAGES += $(AUDIO_HAL_TEST_APPS)
-PRODUCT_PACKAGES += ftm_test_config_parrot-qrd-snd-card
-PRODUCT_PACKAGES += ftm_test_config_parrot-idp-snd-card
-PRODUCT_PACKAGES += ftm_test_config_parrot-qrd-sku1-snd-card
-PRODUCT_PACKAGES += ftm_test_config_parrot-idp-sku1-snd-card
-PRODUCT_PACKAGES += ftm_test_config_ravelin-qrd-snd-card
-PRODUCT_PACKAGES += ftm_test_config_ravelin-idp-snd-card
+#PRODUCT_PACKAGES += ftm_test_config_parrot-qrd-snd-card
+#PRODUCT_PACKAGES += ftm_test_config_parrot-idp-snd-card
+#PRODUCT_PACKAGES += ftm_test_config_parrot-qrd-sku1-snd-card
+#PRODUCT_PACKAGES += ftm_test_config_parrot-idp-sku1-snd-card
+#PRODUCT_PACKAGES += ftm_test_config_ravelin-qrd-snd-card
+#PRODUCT_PACKAGES += ftm_test_config_ravelin-idp-snd-card
 PRODUCT_PACKAGES += audioadsprpcd
 PRODUCT_PACKAGES += vendor.qti.audio-adsprpc-service.rc
 PRODUCT_PACKAGES += android.hardware.audio.service_64
@@ -198,7 +198,7 @@ DEVICE_PACKAGE_OVERLAYS += vendor/qcom/opensource/audio-hal/primary-hal/configs/
 endif
 PRODUCT_PACKAGES += $(AUDIO_AGM)
 PRODUCT_PACKAGES += $(AUDIO_PAL)
-PRODUCT_PACKAGES += $(AUDIO_C2)
+#PRODUCT_PACKAGES += $(AUDIO_C2)
 
 # Audio configuration xml's related to Parrot
 QCV_FAMILY_SKUS := parrot
