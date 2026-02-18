@@ -159,7 +159,6 @@ PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
 #PRODUCT_PACKAGES += ftm_test_config_bengal-scubaqrd-snd-card
 ifneq ($(TARGET_HAS_QTI_OPTIMIZATIONS), true)
 PRODUCT_PACKAGES += audioadsprpcd
-PRODUCT_PACKAGES += vendor.qti.audio-adsprpc-service.rc
 endif
 ifeq ($(filter _515_32go _515s_32go _515tiny_32go, $(TARGET_BOARD_SUFFIX)),)
 PRODUCT_PACKAGES += android.hardware.audio.service_64

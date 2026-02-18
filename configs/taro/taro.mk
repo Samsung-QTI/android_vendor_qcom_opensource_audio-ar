@@ -151,7 +151,6 @@ PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
 #PRODUCT_PACKAGES += ftm_test_config_ukee-mtp-snd-card
 #PRODUCT_PACKAGES += ftm_test_config_ukee-qrd-snd-card
 PRODUCT_PACKAGES += audioadsprpcd
-PRODUCT_PACKAGES += vendor.qti.audio-adsprpc-service.rc
 PRODUCT_PACKAGES += android.hardware.audio.service_64
 PRODUCT_PACKAGES += android.hardware.audio.service_64.rc
 #PRODUCT_PACKAGES += MTP_acdb_cal.acdb
