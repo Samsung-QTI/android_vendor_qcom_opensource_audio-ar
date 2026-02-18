@@ -116,12 +116,12 @@ AUDIO_WRAPPER := libqahw
 AUDIO_WRAPPER += libqahwwrapper
 
 #HAL Test app
-AUDIO_HAL_TEST_APPS := hal_play_test
-AUDIO_HAL_TEST_APPS += hal_rec_test
+#AUDIO_HAL_TEST_APPS := hal_play_test
+#AUDIO_HAL_TEST_APPS += hal_rec_test
 
 PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
 PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
-PRODUCT_PACKAGES += $(AUDIO_HAL_TEST_APPS)
+#PRODUCT_PACKAGES += $(AUDIO_HAL_TEST_APPS)
 ifeq ($(TARGET_SUPPORTS_WEAR_AON),true)
  PRODUCT_PACKAGES += IDP_acdb_cal_monaco_slate.acdb
  PRODUCT_PACKAGES += IDP_workspaceFileXml_monaco_slate.qwsp

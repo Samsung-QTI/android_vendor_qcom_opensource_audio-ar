@@ -147,12 +147,12 @@ AUDIO_C2 += libEvrcSwCodec
 AUDIO_C2 += libQcelp13SwCodec
 
 #HAL Test app
-AUDIO_HAL_TEST_APPS := hal_play_test
-AUDIO_HAL_TEST_APPS += hal_rec_test
+#AUDIO_HAL_TEST_APPS := hal_play_test
+#AUDIO_HAL_TEST_APPS += hal_rec_test
 
 PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
 PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
-PRODUCT_PACKAGES += $(AUDIO_HAL_TEST_APPS)
+#PRODUCT_PACKAGES += $(AUDIO_HAL_TEST_APPS)
 PRODUCT_PACKAGES += ftm_test_config
 PRODUCT_PACKAGES += ftm_test_config_bengal-qrd-snd-card
 PRODUCT_PACKAGES += ftm_test_config_bengal-idp-snd-card
