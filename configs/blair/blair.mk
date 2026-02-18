@@ -210,9 +210,9 @@ PRODUCT_PACKAGES += libfmpal
 #PRODUCT_PACKAGES += fai__2.0.0_0.1__3.0.0_0.0__eai_1.10.pmd
 #PRODUCT_PACKAGES += fai__2.2.0_0.1__3.0.0_0.0__eai_1.10.pmd
 
-ifeq ($(strip $(AUDIO_FEATURE_ENABLED_MCS)), true)
-PRODUCT_PACKAGES += libmcs
-endif
+#ifeq ($(strip $(AUDIO_FEATURE_ENABLED_MCS)), true)
+#PRODUCT_PACKAGES += libmcs
+#endif
 
 ifneq ($(strip $(TARGET_USES_RRO)), true)
 #Audio Specific device overlays

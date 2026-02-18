@@ -188,9 +188,9 @@ PRODUCT_PACKAGES += event.eai
 PRODUCT_PACKAGES += music.eai
 PRODUCT_PACKAGES += speech.eai
 #PRODUCT_PACKAGES += libqtigefar
-ifeq ($(strip $(AUDIO_FEATURE_ENABLED_MCS)), true)
-PRODUCT_PACKAGES += libmcs
-endif
+#ifeq ($(strip $(AUDIO_FEATURE_ENABLED_MCS)), true)
+#PRODUCT_PACKAGES += libmcs
+#endif
 
 ifneq ($(strip $(TARGET_USES_RRO)), true)
 #Audio Specific device overlays
