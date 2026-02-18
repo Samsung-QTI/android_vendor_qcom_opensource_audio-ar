@@ -109,7 +109,7 @@ AUDIO_PAL := libar-pal
 AUDIO_PAL += lib_bt_bundle
 AUDIO_PAL += lib_bt_aptx
 AUDIO_PAL += lib_bt_ble
-AUDIO_PAL += catf
+#AUDIO_PAL += catf
 #PAL Service
 AUDIO_PAL += libpalclient
 AUDIO_PAL += vendor.qti.hardware.pal@1.0-impl
