@@ -114,11 +114,11 @@ AUDIO_HARDWARE += audio.r_submix.default
 AUDIO_HARDWARE += audio.primary.kona
 
 #HAL Wrapper
-AUDIO_WRAPPER := libqahw
-AUDIO_WRAPPER += libqahwwrapper
+#AUDIO_WRAPPER := libqahw
+#AUDIO_WRAPPER += libqahwwrapper
 
 PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
-PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
+#PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
 
 ifeq ($(AUDIO_FEATURE_ENABLED_DLKM),true)
 BOARD_VENDOR_KERNEL_MODULES := \

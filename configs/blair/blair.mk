@@ -127,8 +127,8 @@ AUDIO_HARDWARE += audio.r_submix.default
 AUDIO_HARDWARE += audio.primary.blair
 
 #HAL Wrapper
-AUDIO_WRAPPER := libqahw
-AUDIO_WRAPPER += libqahwwrapper
+#AUDIO_WRAPPER := libqahw
+#AUDIO_WRAPPER += libqahwwrapper
 
 # C2 Audio
 AUDIO_C2 := libqc2audio_base
@@ -151,7 +151,7 @@ AUDIO_C2 += libQcelp13SwCodec
 #AUDIO_HAL_TEST_APPS += hal_rec_test
 
 PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
-PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
+#PRODUCT_PACKAGES += $(AUDIO_WRAPPER)
 #PRODUCT_PACKAGES += $(AUDIO_HAL_TEST_APPS)
 PRODUCT_PACKAGES += ftm_test_config_blair-mtp-snd-card
 PRODUCT_PACKAGES += ftm_test_config_blair-mtp-usbc-snd-card
