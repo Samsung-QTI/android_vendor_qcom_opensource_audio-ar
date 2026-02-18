@@ -191,7 +191,7 @@ PRODUCT_PACKAGES += libfmpal
 PRODUCT_PACKAGES += event.eai
 PRODUCT_PACKAGES += music.eai
 PRODUCT_PACKAGES += speech.eai
-PRODUCT_PACKAGES += libqtigefar
+#PRODUCT_PACKAGES += libqtigefar
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_MCS)), true)
 PRODUCT_PACKAGES += libmcs
 endif

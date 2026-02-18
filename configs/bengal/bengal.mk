@@ -192,7 +192,7 @@ endif #TARGET_BOARD_SUFFIX
 #PRODUCT_PACKAGES += fai__2.2.0_0.1__3.0.0_0.0__eai_1.00.pmd
 PRODUCT_PACKAGES += libhfp_pal
 PRODUCT_PACKAGES += libfmpal
-PRODUCT_PACKAGES += libqtigefar
+#PRODUCT_PACKAGES += libqtigefar
 #PRODUCT_PACKAGES += IDP_arrax_acdb_cal.acdb
 #PRODUCT_PACKAGES += IDP_arrax_workspaceFileXml.qwsp
 #PRODUCT_PACKAGES += QRD_arrax_acdb_cal.acdb
