@@ -156,7 +156,7 @@ PRODUCT_PACKAGES += $(AUDIO_HARDWARE)
 #PRODUCT_PACKAGES += ftm_test_config_blair-mtp-usbc-snd-card
 #PRODUCT_PACKAGES += ftm_test_config_blair-qrd-snd-card
 PRODUCT_PACKAGES += audioadsprpcd
-PRODUCT_PACKAGES += android.hardware.audio.service_64
+#PRODUCT_PACKAGES += android.hardware.audio.service_64
 PRODUCT_PACKAGES += android.hardware.audio.service_64.rc
 #ifeq ($(filter $(PRODUCT_NAME_LX), P86801AA1 P86803AA1 P86801GA1 P86802AA1 P86802CA1 P86801JA1 P86801KA1 P86803DA1 P86803EA1), $(PRODUCT_NAME_LX)) #Global models customized audio param
 #PRODUCT_PACKAGES += acdb_cal.acdb
