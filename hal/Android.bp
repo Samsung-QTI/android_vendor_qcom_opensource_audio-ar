@@ -86,6 +86,10 @@ target_board_platform_cc_library_shared {
         "AudioDevice.cpp",
         "AudioStream.cpp",
         "AudioVoice.cpp",
+        "fsm_cali_ar/fsalgo_calib.c",
+        "fsm_cali_ar/fsalgo_dsp_intf.c",
+        "fsm_cali_ar/fsalgo_mixer.c",
+        "fsm_cali_ar/fsalgo_reg.c",
         "audio_extn/AudioExtn.cpp",
         "audio_extn/Gain.cpp",
         "audio_extn/Gef.cpp",
@@ -93,13 +97,20 @@ target_board_platform_cc_library_shared {
     ],
 
     include_dirs: [
+        "external/tinyalsa/include",
         "system/media/audio_effects/include",
+        "vendor/qcom/opensource/agm/plugins/tinyalsa/test",
     ],
 
-    local_include_dirs: ["inc"],
+    local_include_dirs: [
+        "inc",
+        "fsm_cali_ar",
+    ],
 
     header_libs: [
         "libagm_headers",
+        "libagmclient_headers",
+        "libacdb_headers",
         "libarpal_headers",
         "libaudio_extn_headers",
         "libaudio_system_headers",
@@ -116,6 +127,8 @@ target_board_platform_cc_library_shared {
         "libfmq",
         "libhidlbase",
         "liblog",
+        "libtinyalsa",
+        "libagmmixer",
         "libprocessgroup",
         "libutils",
     ] + select(soong_config_variable("qtiaudio", "feature_pal_hidl"), {

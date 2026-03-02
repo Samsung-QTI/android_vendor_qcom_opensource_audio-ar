@@ -80,7 +80,8 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_C_INCLUDES += external/tinyalsa/include \
     $(LOCAL_PATH)/fsm_cali_ar \
-    vendor/qcom/opensource/agm/plugins/tinyalsa/test
+    vendor/qcom/opensource/agm/plugins/tinyalsa/test \
+    vendor/qcom/opensource/pal/acdbdata
 
 LOCAL_CFLAGS += -DBACKEND_CONF_FILE=\"/vendor/etc/backend_conf.xml\"
 
@@ -100,6 +101,7 @@ LOCAL_HEADER_LIBRARIES := \
     libhardware_headers \
     qti_audio_kernel_uapi \
     libagm_headers \
+    libacdb_headers \
     libaudio_extn_headers \
     libagmclient_headers
 
