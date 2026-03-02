@@ -19,6 +19,11 @@ int frsm_set_calib_mode(bool is_set);
 
 #define FSM_DEFAULT_RDC  (7*4096)
 #define FSM_SCENE_CKV    0xEC000000
+
+#ifndef BACKEND_CONF_FILE
+#define BACKEND_CONF_FILE "/vendor/etc/backend_conf.xml"
+#endif
+
 // +P86801AA1, zhouweijie.lux, ADD, 2025/08/20, add mmi test
 #define MAX_CALI_RE_SPK (8.4)
 #define MIN_CALI_RE_SPK (5.6)
