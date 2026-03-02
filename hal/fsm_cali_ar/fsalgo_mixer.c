@@ -72,7 +72,7 @@ static void tinymix_print_enum(struct mixer_ctl *ctl, const char *space,
     }
  }
 static int tinymix_get_control_info(struct mixer *mixer, const char *control,
-                                  int *type, int *nvalue)
+                                  enum mixer_ctl_type *type, int *nvalue)
 {
     struct mixer_ctl *ctl;
 
@@ -102,7 +102,7 @@ static int tinymix_get_control(struct mixer *mixer, const char *control,
     unsigned int i;
     int ret = 0;
     char *buf = NULL;
-    char *cvbuf = vbuf;
+    char *cvbuf = (char *)vbuf;
     size_t len;
     unsigned int tlv_header_size = 0;
     const char *space = " ";
